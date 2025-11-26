@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/rule/">
+    <File Path="rule/csv-vsto.md" />
+    <File Path="rule/enavi202510(3034).csv" />
+    <File Path="rule/enavi202510(7969).csv" />
+    <File Path="rule/type.csv" />
+  </Folder>
+  <Project Path="analyzer/analyzer.csproj" />
+</Solution>

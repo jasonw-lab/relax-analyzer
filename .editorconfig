@@ -1,0 +1,66 @@
+# 最上位の設定ファイルであることを示す
+root = true
+
+# 全てのファイルに適用
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# C# ファイル (.cs) 用の設定
+[*.cs]
+# インデント設定
+indent_size = 4
+tab_width = 4
+
+# using の整理（System系を先頭に）
+dotnet_sort_system_directives_first = true
+# using を名前空間の外側に配置しない（内側推奨派もいるが、標準は外側）
+csharp_using_directive_placement = outside_namespace
+
+# --- 波カッコ {} の配置（Microsoft標準 / Allman style） ---
+# ここを Google流にするなら false にするが、C#では true (改行する) が圧倒的主流
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+
+# --- スタイル設定 ---
+# var の使用を許可（型が明らかな場合）
+csharp_style_var_when_type_is_apparent = true:suggestion
+# 組み込み型キーワードを使用 (Int32 ではなく int)
+csharp_style_var_for_built_in_types = true:suggestion
+
+# --- 命名規則 (ここが重要) ---
+# インターフェースは I で始める (IRequest)
+dotnet_naming_rule.interface_should_be_begins_with_i.severity = suggestion
+dotnet_naming_rule.interface_should_be_begins_with_i.symbols = interface
+dotnet_naming_rule.interface_should_be_begins_with_i.style = begins_with_i
+
+dotnet_naming_symbols.interface.applicable_kinds = interface
+dotnet_naming_style.begins_with_i.required_prefix = I
+dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+# 非同期メソッドは Async で終わる (LoadDataAsync)
+dotnet_naming_rule.async_methods_should_end_with_async.severity = suggestion
+dotnet_naming_rule.async_methods_should_end_with_async.symbols = async_methods
+dotnet_naming_rule.async_methods_should_end_with_async.style = end_with_async
+
+dotnet_naming_symbols.async_methods.applicable_kinds = method
+dotnet_naming_symbols.async_methods.applicable_accessibilities = *
+dotnet_naming_style.end_with_async.required_suffix = Async
+dotnet_naming_style.end_with_async.capitalization = pascal_case
+
+# プライベートフィールドは _camelCase (例: _logger)
+# ※ Googleは末尾に_をつけるが、C#界隈は先頭に_がデファクト
+dotnet_naming_rule.private_fields_should_begin_with_underscore.severity = suggestion
+dotnet_naming_rule.private_fields_should_begin_with_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_should_begin_with_underscore.style = begin_with_underscore
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.begin_with_underscore.required_prefix = _
+dotnet_naming_style.begin_with_underscore.capitalization = camel_case
