@@ -1,6 +1,7 @@
 # Ignore auto-generated designer partial classes (WinForms / VSTO)
 *.Designer.cs
-
+*.pfx
+# Allow customizing the ribbon designer class
 # Optional: if you generate interop wrappers or reference assemblies copies
 # Uncomment as needed:
 # GeneratedCode/**

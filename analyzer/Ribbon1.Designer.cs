@@ -34,51 +34,55 @@ namespace analyzer
         /// </summary>
         private void InitializeComponent()
         {
-            this.tab1 = this.Factory.CreateRibbonTab();
-            this.group1 = this.Factory.CreateRibbonGroup();
-            this.button1 = this.Factory.CreateRibbonButton();
-            this.tab1.SuspendLayout();
-            this.group1.SuspendLayout();
+            this.tabRelaxAnalyzer = this.Factory.CreateRibbonTab();
+            this.groupAnalyze = this.Factory.CreateRibbonGroup();
+            this.buttonImportCsv = this.Factory.CreateRibbonButton();
+            this.tabRelaxAnalyzer.SuspendLayout();
+            this.groupAnalyze.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tab1
+            // tabRelaxAnalyzer
             // 
-            this.tab1.ControlId.ControlIdType = Microsoft.Office.Tools.Ribbon.RibbonControlIdType.Office;
-            this.tab1.Groups.Add(this.group1);
-            this.tab1.Label = "TabAddIns";
-            this.tab1.Name = "tab1";
+            this.tabRelaxAnalyzer.Groups.Add(this.groupAnalyze);
+            this.tabRelaxAnalyzer.Label = "RelaxAnalyzer";
+            this.tabRelaxAnalyzer.Name = "tabRelaxAnalyzer";
             // 
-            // group1
+            // groupAnalyze
             // 
-            this.group1.Items.Add(this.button1);
-            this.group1.Label = "group1";
-            this.group1.Name = "group1";
+            this.groupAnalyze.Items.Add(this.buttonImportCsv);
+            this.groupAnalyze.Label = "Analyze";
+            this.groupAnalyze.Name = "groupAnalyze";
             // 
-            // button1
+            // buttonImportCsv
             // 
-            this.button1.Label = "button1";
-            this.button1.Name = "button1";
-            this.button1.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button1_Click);
+            this.buttonImportCsv.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonImportCsv.Label = "CSV取込";
+            this.buttonImportCsv.Name = "buttonImportCsv";
+            this.buttonImportCsv.OfficeImageId = "ImportTextFile";
+            this.buttonImportCsv.ScreenTip = "CSV取込";
+            this.buttonImportCsv.ShowImage = true;
+            this.buttonImportCsv.SuperTip = "カード明細 CSV を取り込んで月別シートへ集約します。";
+            this.buttonImportCsv.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonImportCsv_Click);
             // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
             this.RibbonType = "Microsoft.Excel.Workbook";
-            this.Tabs.Add(this.tab1);
+            this.Tabs.Add(this.tabRelaxAnalyzer);
             this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.Ribbon1_Load);
-            this.tab1.ResumeLayout(false);
-            this.tab1.PerformLayout();
-            this.group1.ResumeLayout(false);
-            this.group1.PerformLayout();
+            this.tabRelaxAnalyzer.ResumeLayout(false);
+            this.tabRelaxAnalyzer.PerformLayout();
+            this.groupAnalyze.ResumeLayout(false);
+            this.groupAnalyze.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        internal Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
-        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
-        internal Microsoft.Office.Tools.Ribbon.RibbonButton button1;
+        internal Microsoft.Office.Tools.Ribbon.RibbonTab tabRelaxAnalyzer;
+        internal Microsoft.Office.Tools.Ribbon.RibbonGroup groupAnalyze;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonImportCsv;
     }
 
     partial class ThisRibbonCollection

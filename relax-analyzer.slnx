@@ -5,5 +5,5 @@
     <File Path="rule/enavi202510(7969).csv" />
     <File Path="rule/type.csv" />
   </Folder>
-  <Project Path="analyzer/analyzer.csproj" />
+  <Project Path="analyzer/analyzer.csproj" Id="2a3f0411-a76d-4bfa-bb70-099eb3f7540e" />
 </Solution>

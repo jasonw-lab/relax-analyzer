@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-using Excel = Microsoft.Office.Interop.Excel;
-using Office = Microsoft.Office.Core;
-using Microsoft.Office.Tools.Excel;
+using analyzer.Core;
 
 namespace analyzer
 {
     public partial class ThisAddIn
     {
+        internal RelaxAnalyzerConfig Configuration { get; private set; }
+
+        internal IDictionary<string, SheetState> SheetStates { get; } = new Dictionary<string, SheetState>(StringComparer.OrdinalIgnoreCase);
+
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
+            Configuration = RelaxAnalyzerConfig.Load();
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)

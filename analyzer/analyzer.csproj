@@ -188,6 +188,14 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Core\CsvImportModels.cs" />
+    <Compile Include="Core\CsvImportService.cs" />
+    <Compile Include="Core\MonthExtractor.cs" />
+    <Compile Include="Core\RelaxAnalyzerConfig.cs" />
+    <Compile Include="Core\SheetWriter.cs" />
+    <Compile Include="Core\TypeKeyword.cs" />
+    <Compile Include="Core\TypeMappingProvider.cs" />
+    <Compile Include="Core\TypeResolver.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -225,6 +233,11 @@
       <DependentUpon>ThisAddIn.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CsvHelper">
+      <Version>30.0.1</Version>
+    </PackageReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
