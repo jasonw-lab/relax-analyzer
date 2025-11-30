@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using analyzer.Core;
 using Microsoft.Office.Tools.Ribbon;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace analyzer
 {
@@ -47,7 +48,8 @@ namespace analyzer
                 return;
             }
 
-            if (addIn.Application.ActiveSheet == null)
+            var activeSheet = addIn.Application.ActiveSheet as Excel.Worksheet;
+            if (activeSheet == null)
             {
                 MessageBox.Show("アクティブなシートがありません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -65,7 +67,7 @@ namespace analyzer
             var resolver = new TypeResolver(typeMappings);
             try
             {
-                UpdateTypeColumn(addIn.Application.ActiveSheet, resolver, warnings);
+                UpdateTypeColumn(activeSheet, resolver, warnings);
             }
             catch (Exception ex)
             {
@@ -76,7 +78,7 @@ namespace analyzer
             NotifyCompletion(warnings);
         }
 
-        private void UpdateTypeColumn(dynamic worksheet, TypeResolver resolver, IList<string> warnings)
+        private void UpdateTypeColumn(Excel.Worksheet worksheet, TypeResolver resolver, IList<string> warnings)
         {
             var usedRange = worksheet.UsedRange;
             if (usedRange == null)
@@ -86,29 +88,78 @@ namespace analyzer
             }
 
             var lastRow = usedRange.Rows.Count;
-            if (lastRow < 4)
+            const int startRow = 4;
+            if (lastRow < startRow)
             {
                 warnings.Add("アクティブシートのデータが不足しています。");
                 return;
             }
 
-            var updatedCount = 0;
-            for (var row = 4; row <= lastRow; row++)
+            var totalRows = lastRow - startRow + 1;
+            var bRange = (Excel.Range)worksheet.Range[worksheet.Cells[startRow, 2], worksheet.Cells[lastRow, 2]];
+            var bValuesObj = bRange.Value2;
+            if (bValuesObj == null)
             {
-                var storeNameCell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[row, 2];
-                var typeCell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[row, 11];
-                var storeName = Convert.ToString(storeNameCell.Value2)?.Trim();
+                warnings.Add("B列データが取得できませんでした。");
+                return;
+            }
 
-                if (string.IsNullOrEmpty(storeName))
+            var bValues = bValuesObj as object[,];
+            if (bValues == null)
+            {
+                warnings.Add("B列データの形式が不正です。");
+                return;
+            }
+
+            var kRange = (Excel.Range)worksheet.Range[worksheet.Cells[startRow, 11], worksheet.Cells[lastRow, 11]];
+            var kValuesObj = kRange.Value2;
+            var kValues = kValuesObj as object[,];
+            if (kValues == null)
+            {
+                kValues = new object[totalRows, 1];
+            }
+
+            var updatedCount = 0;
+
+            var app = worksheet.Application;
+            var prevCalc = app.Calculation;
+            var prevScreenUpdating = app.ScreenUpdating;
+            var prevEnableEvents = app.EnableEvents;
+            try
+            {
+                if (totalRows > 50)
                 {
-                    continue;
+                    app.ScreenUpdating = false;
+                    app.EnableEvents = false;
+                    app.Calculation = Excel.XlCalculation.xlCalculationManual;
                 }
 
-                var resolvedType = resolver.Resolve(storeName);
-                if (!string.IsNullOrEmpty(resolvedType))
+                for (var i = 1; i <= totalRows; i++)
                 {
-                    typeCell.Value2 = resolvedType;
-                    updatedCount++;
+                    var raw = bValues[i, 1];
+                    var storeName = raw == null ? string.Empty : Convert.ToString(raw).Trim();
+                    if (string.IsNullOrEmpty(storeName))
+                    {
+                        continue;
+                    }
+
+                    var resolvedType = resolver.Resolve(storeName);
+                    if (!string.IsNullOrEmpty(resolvedType))
+                    {
+                        kValues[i, 1] = resolvedType;
+                        updatedCount++;
+                    }
+                }
+
+                kRange.Value2 = kValues;
+            }
+            finally
+            {
+                if (totalRows > 50)
+                {
+                    app.Calculation = prevCalc;
+                    app.EnableEvents = prevEnableEvents;
+                    app.ScreenUpdating = prevScreenUpdating;
                 }
             }
 
