@@ -42,7 +42,7 @@ Excel のリボンに「RelaxAnalyzer」タブが追加されます:
    - 例:
      ```ini
      Project = E:\Project
-     TypeCSV = D:\Git\ross-dev2024\relax-analyzer\rule\type.csv
+     TypeCSV = relax-analyzer\rule\type.csv
      ```
 
 2. **type.csv または type シートの準備**
