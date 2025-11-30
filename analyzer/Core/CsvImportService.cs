@@ -126,7 +126,7 @@ namespace analyzer.Core
                 Delimiter = ","
             };
 
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.SequentialScan))
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 32768, FileOptions.SequentialScan))
             using (var reader = new StreamReader(stream, encoding, true))
             using (var csv = new CsvReader(reader, cfg))
             {

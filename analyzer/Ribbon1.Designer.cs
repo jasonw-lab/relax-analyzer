@@ -37,6 +37,7 @@ namespace analyzer
             this.tabRelaxAnalyzer = this.Factory.CreateRibbonTab();
             this.groupAnalyze = this.Factory.CreateRibbonGroup();
             this.buttonImportCsv = this.Factory.CreateRibbonButton();
+            this.buttonUpdateType = this.Factory.CreateRibbonButton();
             this.tabRelaxAnalyzer.SuspendLayout();
             this.groupAnalyze.SuspendLayout();
             this.SuspendLayout();
@@ -50,6 +51,7 @@ namespace analyzer
             // groupAnalyze
             // 
             this.groupAnalyze.Items.Add(this.buttonImportCsv);
+            this.groupAnalyze.Items.Add(this.buttonUpdateType);
             this.groupAnalyze.Label = "Analyze";
             this.groupAnalyze.Name = "groupAnalyze";
             // 
@@ -63,6 +65,17 @@ namespace analyzer
             this.buttonImportCsv.ShowImage = true;
             this.buttonImportCsv.SuperTip = "カード明細 CSV を取り込んで月別シートへ集約します。";
             this.buttonImportCsv.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonImportCsv_Click);
+            // 
+            // buttonUpdateType
+            // 
+            this.buttonUpdateType.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonUpdateType.Label = "消費種類";
+            this.buttonUpdateType.Name = "buttonUpdateType";
+            this.buttonUpdateType.OfficeImageId = "TagMarkComplete";
+            this.buttonUpdateType.ScreenTip = "消費種類更新";
+            this.buttonUpdateType.ShowImage = true;
+            this.buttonUpdateType.SuperTip = "アクティブシートのK列を type シートのキーワードで更新します。";
+            this.buttonUpdateType.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonUpdateType_Click);
             // 
             // Ribbon1
             // 
@@ -83,6 +96,7 @@ namespace analyzer
         internal Microsoft.Office.Tools.Ribbon.RibbonTab tabRelaxAnalyzer;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup groupAnalyze;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonImportCsv;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonUpdateType;
     }
 
     partial class ThisRibbonCollection
