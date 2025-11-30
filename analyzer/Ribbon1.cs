@@ -32,6 +32,92 @@ namespace analyzer
             }
         }
 
+        private void buttonUpdateType_Click(object sender, RibbonControlEventArgs e)
+        {
+            var addIn = Globals.ThisAddIn;
+            if (addIn?.Application == null)
+            {
+                MessageBox.Show("Excel アプリケーションが見つかりません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (addIn.Application.ActiveWorkbook == null)
+            {
+                MessageBox.Show("アクティブなブックがありません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (addIn.Application.ActiveSheet == null)
+            {
+                MessageBox.Show("アクティブなシートがありません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var warnings = new List<string>();
+            var config = addIn.Configuration ?? RelaxAnalyzerConfig.Load();
+            var typeMappings = TypeMappingProvider.LoadMappings(config, addIn.Application.ActiveWorkbook, warnings);
+            if (typeMappings.Count == 0)
+            {
+                MessageBox.Show("type マッピングデータが見つかりません。\ntype シートまたは type.csv を確認してください。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var resolver = new TypeResolver(typeMappings);
+            try
+            {
+                UpdateTypeColumn(addIn.Application.ActiveSheet, resolver, warnings);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("消費種類更新中にエラーが発生しました。\n" + ex.Message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            NotifyCompletion(warnings);
+        }
+
+        private void UpdateTypeColumn(dynamic worksheet, TypeResolver resolver, IList<string> warnings)
+        {
+            var usedRange = worksheet.UsedRange;
+            if (usedRange == null)
+            {
+                warnings.Add("アクティブシートにデータがありません。");
+                return;
+            }
+
+            var lastRow = usedRange.Rows.Count;
+            if (lastRow < 4)
+            {
+                warnings.Add("アクティブシートのデータが不足しています。");
+                return;
+            }
+
+            var updatedCount = 0;
+            for (var row = 4; row <= lastRow; row++)
+            {
+                var storeNameCell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[row, 2];
+                var typeCell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[row, 11];
+                var storeName = Convert.ToString(storeNameCell.Value2)?.Trim();
+
+                if (string.IsNullOrEmpty(storeName))
+                {
+                    continue;
+                }
+
+                var resolvedType = resolver.Resolve(storeName);
+                if (!string.IsNullOrEmpty(resolvedType))
+                {
+                    typeCell.Value2 = resolvedType;
+                    updatedCount++;
+                }
+            }
+
+            if (updatedCount == 0)
+            {
+                warnings.Add("更新可能な消費種類が見つかりませんでした。");
+            }
+        }
+
         private async Task ImportAsync(string[] fileNames)
         {
             var addIn = Globals.ThisAddIn;
@@ -82,11 +168,11 @@ namespace analyzer
         {
             if (warnings == null || warnings.Count == 0)
             {
-                MessageBox.Show("CSV 取込が完了しました。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("処理が完了しました。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var message = "CSV 取込が完了しました。\n\n" + string.Join(Environment.NewLine, warnings);
+            var message = "処理が完了しました。\n\n" + string.Join(Environment.NewLine, warnings);
             MessageBox.Show(message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
