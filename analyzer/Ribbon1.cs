@@ -164,21 +164,21 @@ namespace analyzer
                 sheet.Cells.ClearContents();
 
                 var data = AmazonOrderSummaryService.ReadOutputCsvForPaste(csvPath);
-                if (data == null || data.GetLength(0) ==0 || data.GetLength(1) ==0)
+                if (data == null || data.GetLength(0) == 0 || data.GetLength(1) == 0)
                 {
                     return;
                 }
 
                 var rows = data.GetLength(0);
                 var cols = data.GetLength(1);
-                var start = (Excel.Range)sheet.Cells[1,1];
+                var start = (Excel.Range)sheet.Cells[1, 1];
                 var end = (Excel.Range)sheet.Cells[rows, cols];
                 var range = sheet.Range[start, end];
                 range.Value2 = data;
 
                 // Apply simple formatting
                 sheet.Columns.AutoFit();
-                sheet.Range[sheet.Cells[1,1], sheet.Cells[1, cols]].Font.Bold = true;
+                sheet.Range[sheet.Cells[1, 1], sheet.Cells[1, cols]].Font.Bold = true;
                 sheet.Activate();
             }
             finally
