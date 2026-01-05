@@ -1,5 +1,9 @@
 <Solution>
   <Folder Name="/rule/">
+    <File Path="rule/amazon-csv/amazon_order_summary.csv" />
+    <File Path="rule/amazon-csv/feature-amazon-check.md" />
+    <File Path="rule/amazon-csv/feature-amzaon-csv.md" />
+    <File Path="rule/amazon-csv/Retail.OrderHistory.3.csv" />
     <File Path="rule/csv-vsto.md" />
     <File Path="rule/type.csv" />
   </Folder>

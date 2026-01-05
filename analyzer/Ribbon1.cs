@@ -78,6 +78,117 @@ namespace analyzer
             NotifyCompletion(warnings);
         }
 
+        private void buttonAmazonOrderSummary_Click(object sender, RibbonControlEventArgs e)
+        {
+            using (var dialog = new OpenFileDialog
+            {
+                Filter = "Amazon OrderHistory CSV (Retail.OrderHistory*.csv)|Retail.OrderHistory*.csv|CSV files (*.csv)|*.csv",
+                Multiselect = false,
+                Title = "Amazon: Retail.OrderHistory*.csv を選択"
+            })
+            {
+                if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.FileName))
+                {
+                    return;
+                }
+
+                string outputPath;
+                using (var save = new SaveFileDialog
+                {
+                    Filter = "CSV files (*.csv)|*.csv",
+                    FileName = "amazon_order_summary.csv",
+                    Title = "出力先 amazon_order_summary.csv"
+                })
+                {
+                    if (save.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(save.FileName))
+                    {
+                        return;
+                    }
+
+                    outputPath = save.FileName;
+                }
+
+                try
+                {
+                    var service = new AmazonOrderSummaryService();
+                    var result = service.Generate(dialog.FileName, outputPath);
+
+                    var addIn = Globals.ThisAddIn;
+                    if (addIn?.Application != null && addIn.Application.ActiveWorkbook != null)
+                    {
+                        PasteCsvToAmazonSheet(addIn.Application.ActiveWorkbook, outputPath);
+                    }
+
+                    MessageBox.Show(string.Join(Environment.NewLine, result.Logs), "Amazon CSV サマリ作成", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Amazon CSV サマリ作成中にエラーが発生しました。\n" + ex.Message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private static void PasteCsvToAmazonSheet(Excel.Workbook workbook, string csvPath)
+        {
+            if (workbook == null) throw new ArgumentNullException(nameof(workbook));
+            if (string.IsNullOrWhiteSpace(csvPath)) throw new ArgumentException(nameof(csvPath));
+
+            var app = workbook.Application;
+            var prevCalc = app.Calculation;
+            var prevScreenUpdating = app.ScreenUpdating;
+            var prevEnableEvents = app.EnableEvents;
+
+            try
+            {
+                app.ScreenUpdating = false;
+                app.EnableEvents = false;
+                app.Calculation = Excel.XlCalculation.xlCalculationManual;
+
+                Excel.Worksheet sheet = null;
+                foreach (Excel.Worksheet ws in workbook.Worksheets)
+                {
+                    if (string.Equals(ws.Name, "amazon", StringComparison.OrdinalIgnoreCase))
+                    {
+                        sheet = ws;
+                        break;
+                    }
+                }
+
+                if (sheet == null)
+                {
+                    sheet = (Excel.Worksheet)workbook.Worksheets.Add(After: workbook.Worksheets[workbook.Worksheets.Count]);
+                    sheet.Name = "amazon";
+                }
+
+                // Clear sheet then paste CSV
+                sheet.Cells.ClearContents();
+
+                var data = AmazonOrderSummaryService.ReadOutputCsvForPaste(csvPath);
+                if (data == null || data.GetLength(0) ==0 || data.GetLength(1) ==0)
+                {
+                    return;
+                }
+
+                var rows = data.GetLength(0);
+                var cols = data.GetLength(1);
+                var start = (Excel.Range)sheet.Cells[1,1];
+                var end = (Excel.Range)sheet.Cells[rows, cols];
+                var range = sheet.Range[start, end];
+                range.Value2 = data;
+
+                // Apply simple formatting
+                sheet.Columns.AutoFit();
+                sheet.Range[sheet.Cells[1,1], sheet.Cells[1, cols]].Font.Bold = true;
+                sheet.Activate();
+            }
+            finally
+            {
+                app.Calculation = prevCalc;
+                app.EnableEvents = prevEnableEvents;
+                app.ScreenUpdating = prevScreenUpdating;
+            }
+        }
+
         private void UpdateTypeColumn(Excel.Worksheet worksheet, TypeResolver resolver, IList<string> warnings)
         {
             var usedRange = worksheet.UsedRange;
@@ -225,6 +336,73 @@ namespace analyzer
 
             var message = "処理が完了しました。\n\n" + string.Join(Environment.NewLine, warnings);
             MessageBox.Show(message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void buttonAmazonCheck_Click(object sender, RibbonControlEventArgs e)
+        {
+            var addIn = Globals.ThisAddIn;
+            if (addIn?.Application == null)
+            {
+                MessageBox.Show("Excel アプリケーションが見つかりません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (addIn.Application.ActiveWorkbook == null)
+            {
+                MessageBox.Show("アクティブなブックがありません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var activeSheet = addIn.Application.ActiveSheet as Excel.Worksheet;
+            if (activeSheet == null)
+            {
+                MessageBox.Show("アクティブなシートがありません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var sheetName = activeSheet.Name;
+
+            // アクティブシートが1〜12の月シートかどうか確認
+            var isMonthSheet = int.TryParse(sheetName, out var month) && month >= 1 && month <= 12;
+
+            if (!isMonthSheet)
+            {
+                // アクティブシートが月シートでない場合、全シート処理を確認
+                var result = MessageBox.Show(
+                    "アクティブシートは月シート（1〜12）ではありません。\n全ての月シートに対してAmazon照合を実行しますか？",
+                    "RelaxAnalyzer - Amazon Check",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+            }
+
+            var warnings = new List<string>();
+            var service = new AmazonCheckService(warnings);
+
+            try
+            {
+                if (isMonthSheet)
+                {
+                    // アクティブシートのみ処理
+                    service.CheckAmazonForSheet(addIn.Application.ActiveWorkbook, sheetName);
+                }
+                else
+                {
+                    // 全シート処理
+                    service.CheckAmazonForAllSheets(addIn.Application.ActiveWorkbook);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Amazon照合中にエラーが発生しました。\n" + ex.Message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            NotifyCompletion(warnings);
         }
     }
 }

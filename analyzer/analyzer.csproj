@@ -185,6 +185,8 @@
     can be found.
   -->
   <ItemGroup>
+    <Compile Include="Core\AmazonCheckService.cs" />
+    <Compile Include="Core\AmazonOrderSummaryService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -208,6 +210,7 @@
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="analyzer_1_TemporaryKey.pfx" />
     <None Include="analyzer_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -248,10 +251,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>analyzer_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>analyzer_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>0D4C87BF569B0E7A6D0C4DA3001E1368C68FE07A</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>9A43E0680251AA4E4D2E750661BC8053751657E4</ManifestCertificateThumbprint>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Include additional build rules for an Office application add-in. -->

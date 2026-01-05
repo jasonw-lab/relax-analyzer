@@ -38,6 +38,8 @@ namespace analyzer
             this.groupAnalyze = this.Factory.CreateRibbonGroup();
             this.buttonImportCsv = this.Factory.CreateRibbonButton();
             this.buttonUpdateType = this.Factory.CreateRibbonButton();
+            this.buttonAmazonOrderSummary = this.Factory.CreateRibbonButton();
+            this.buttonAmazonCheck = this.Factory.CreateRibbonButton();
             this.tabRelaxAnalyzer.SuspendLayout();
             this.groupAnalyze.SuspendLayout();
             this.SuspendLayout();
@@ -52,6 +54,8 @@ namespace analyzer
             // 
             this.groupAnalyze.Items.Add(this.buttonImportCsv);
             this.groupAnalyze.Items.Add(this.buttonUpdateType);
+            this.groupAnalyze.Items.Add(this.buttonAmazonOrderSummary);
+            this.groupAnalyze.Items.Add(this.buttonAmazonCheck);
             this.groupAnalyze.Label = "Analyze";
             this.groupAnalyze.Name = "groupAnalyze";
             // 
@@ -77,6 +81,28 @@ namespace analyzer
             this.buttonUpdateType.SuperTip = "アクティブシートのK列を type シートのキーワードで更新します。";
             this.buttonUpdateType.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonUpdateType_Click);
             // 
+            // buttonAmazonOrderSummary
+            // 
+            this.buttonAmazonOrderSummary.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonAmazonOrderSummary.Label = "Amazon CSV";
+            this.buttonAmazonOrderSummary.Name = "buttonAmazonOrderSummary";
+            this.buttonAmazonOrderSummary.OfficeImageId = "ExportTextFile";
+            this.buttonAmazonOrderSummary.ScreenTip = "Amazon 注文CSVサマリ作成";
+            this.buttonAmazonOrderSummary.ShowImage = true;
+            this.buttonAmazonOrderSummary.SuperTip = "Retail.OrderHistory*.csvから注文サマリCSV (amazon_order_summary.csv) を作成します。";
+            this.buttonAmazonOrderSummary.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonAmazonOrderSummary_Click);
+            // 
+            // buttonAmazonCheck
+            // 
+            this.buttonAmazonCheck.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonAmazonCheck.Label = "Amazon Check";
+            this.buttonAmazonCheck.Name = "buttonAmazonCheck";
+            this.buttonAmazonCheck.OfficeImageId = "FindDialog";
+            this.buttonAmazonCheck.ScreenTip = "Amazon 照合";
+            this.buttonAmazonCheck.ShowImage = true;
+            this.buttonAmazonCheck.SuperTip = "カード明細のAmazon利用にamazonシートから商品名を記入します。";
+            this.buttonAmazonCheck.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonAmazonCheck_Click);
+            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -97,6 +123,8 @@ namespace analyzer
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup groupAnalyze;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonImportCsv;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonUpdateType;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonAmazonOrderSummary;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonAmazonCheck;
     }
 
     partial class ThisRibbonCollection
