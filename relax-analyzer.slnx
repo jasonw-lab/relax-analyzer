@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/rule/">
+    <File Path="README.md" />
     <File Path="rule/amazon-csv/amazon_order_summary.csv" />
     <File Path="rule/amazon-csv/feature-amazon-check.md" />
     <File Path="rule/amazon-csv/feature-amzaon-csv.md" />
