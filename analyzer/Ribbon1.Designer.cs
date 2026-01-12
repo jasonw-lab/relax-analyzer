@@ -41,6 +41,7 @@ namespace analyzer
             this.buttonUpdateTypeAllSheets = this.Factory.CreateRibbonButton();
             this.buttonAmazonOrderSummary = this.Factory.CreateRibbonButton();
             this.buttonAmazonCheck = this.Factory.CreateRibbonButton();
+            this.buttonUpdateYearSheets = this.Factory.CreateRibbonButton();
             this.tabRelaxAnalyzer.SuspendLayout();
             this.groupAnalyze.SuspendLayout();
             this.SuspendLayout();
@@ -58,6 +59,7 @@ namespace analyzer
             this.groupAnalyze.Items.Add(this.buttonUpdateTypeAllSheets);
             this.groupAnalyze.Items.Add(this.buttonAmazonOrderSummary);
             this.groupAnalyze.Items.Add(this.buttonAmazonCheck);
+            this.groupAnalyze.Items.Add(this.buttonUpdateYearSheets);
             this.groupAnalyze.Label = "Analyze";
             this.groupAnalyze.Name = "groupAnalyze";
             // 
@@ -116,6 +118,17 @@ namespace analyzer
             this.buttonAmazonCheck.SuperTip = "カード明細のAmazon利用にamazonシートから商品名を記入します。";
             this.buttonAmazonCheck.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonAmazonCheck_Click);
             // 
+            // buttonUpdateYearSheets
+            // 
+            this.buttonUpdateYearSheets.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonUpdateYearSheets.Label = "年間消費";
+            this.buttonUpdateYearSheets.Name = "buttonUpdateYearSheets";
+            this.buttonUpdateYearSheets.OfficeImageId = "ChartColumnClustered";
+            this.buttonUpdateYearSheets.ScreenTip = "年間消費更新";
+            this.buttonUpdateYearSheets.ShowImage = true;
+            this.buttonUpdateYearSheets.SuperTip = "全ての月シート（1〜12）を集計して「年間」シートのマトリクスを更新します。";
+            this.buttonUpdateYearSheets.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonUpdateYearSheets_Click);
+            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -139,6 +152,7 @@ namespace analyzer
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonUpdateTypeAllSheets;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonAmazonOrderSummary;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonAmazonCheck;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonUpdateYearSheets;
     }
 
     partial class ThisRibbonCollection

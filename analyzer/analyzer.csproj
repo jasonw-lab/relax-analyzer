@@ -187,6 +187,8 @@
   <ItemGroup>
     <Compile Include="Core\AmazonCheckService.cs" />
     <Compile Include="Core\AmazonOrderSummaryService.cs" />
+    <Compile Include="Core\SheetHelper.cs" />
+    <Compile Include="Core\YearSheetService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

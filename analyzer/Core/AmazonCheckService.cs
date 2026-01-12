@@ -42,82 +42,69 @@ namespace analyzer.Core
             if (string.IsNullOrWhiteSpace(cardSheetName)) throw new ArgumentException(nameof(cardSheetName));
 
             // カード利用明細シートを取得
-            var cardSheet = FindSheet(workbook, cardSheetName);
-  if (cardSheet == null)
-       {
-        _warnings.Add($"シート '{cardSheetName}' が見つかりません。");
-       return;
-        }
-
- var amazonSheet = FindSheet(workbook, "amazon");
-            if (amazonSheet == null)
-     {
-    _warnings.Add("'amazon' シートが見つかりません。先にAmazon CSV サマリを作成してください。");
-      return;
+            var cardSheet = SheetHelper.FindSheet(workbook, cardSheetName);
+            if (cardSheet == null)
+            {
+                _warnings.Add($"シート '{cardSheetName}' が見つかりません。");
+                return;
             }
 
-       var amazonOrders = LoadAmazonOrders(amazonSheet);
-     if (amazonOrders.Count == 0)
-        {
-            _warnings.Add("'amazon' シートにデータがありません。");
-       return;
-      }
+            var amazonSheet = SheetHelper.FindSheet(workbook, "amazon");
+            if (amazonSheet == null)
+            {
+                _warnings.Add("'amazon' シートが見つかりません。先にAmazon CSV サマリを作成してください。");
+                return;
+            }
+
+            var amazonOrders = LoadAmazonOrders(amazonSheet);
+            if (amazonOrders.Count == 0)
+            {
+                _warnings.Add("'amazon' シートにデータがありません。");
+                return;
+            }
 
             ProcessCardSheet(cardSheet, amazonOrders);
         }
 
         /// <summary>
- /// 全てのカード利用明細シート（1〜12）に対してAmazon照合を実行
+        /// 全てのカード利用明細シート（1〜12）に対してAmazon照合を実行
         /// </summary>
-      public void CheckAmazonForAllSheets(Excel.Workbook workbook)
+        public void CheckAmazonForAllSheets(Excel.Workbook workbook)
         {
-    if (workbook == null) throw new ArgumentNullException(nameof(workbook));
+            if (workbook == null) throw new ArgumentNullException(nameof(workbook));
 
-var amazonSheet = FindSheet(workbook, "amazon");
+            var amazonSheet = SheetHelper.FindSheet(workbook, "amazon");
             if (amazonSheet == null)
-  {
+            {
                 _warnings.Add("'amazon' シートが見つかりません。先にAmazon CSV サマリを作成してください。");
-      return;
+                return;
             }
 
-     var amazonOrders = LoadAmazonOrders(amazonSheet);
- if (amazonOrders.Count == 0)
-         {
-             _warnings.Add("'amazon' シートにデータがありません。");
-     return;
+            var amazonOrders = LoadAmazonOrders(amazonSheet);
+            if (amazonOrders.Count == 0)
+            {
+                _warnings.Add("'amazon' シートにデータがありません。");
+                return;
             }
 
             var processedCount = 0;
-       for (var month = 1; month <= 12; month++)
- {
-      var sheetName = month.ToString(CultureInfo.InvariantCulture);
-  var sheet = FindSheet(workbook, sheetName);
-    if (sheet == null)
-       {
-           continue;
-        }
+            for (var month = 1; month <= 12; month++)
+            {
+                var sheetName = month.ToString(CultureInfo.InvariantCulture);
+                var sheet = SheetHelper.FindSheet(workbook, sheetName);
+                if (sheet == null)
+                {
+                    continue;
+                }
 
-          ProcessCardSheet(sheet, amazonOrders);
-      processedCount++;
+                ProcessCardSheet(sheet, amazonOrders);
+                processedCount++;
             }
 
- if (processedCount == 0)
+            if (processedCount == 0)
             {
                 _warnings.Add("カード利用明細シート（1〜12）が見つかりませんでした。");
             }
-        }
-
-        private static Excel.Worksheet FindSheet(Excel.Workbook workbook, string sheetName)
-   {
-            foreach (Excel.Worksheet ws in workbook.Worksheets)
-       {
-         if (string.Equals(ws.Name, sheetName, StringComparison.OrdinalIgnoreCase))
-           {
-           return ws;
-          }
-      }
-
-            return null;
         }
 
         private List<AmazonOrder> LoadAmazonOrders(Excel.Worksheet amazonSheet)
