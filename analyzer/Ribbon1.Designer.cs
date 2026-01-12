@@ -38,6 +38,7 @@ namespace analyzer
             this.groupAnalyze = this.Factory.CreateRibbonGroup();
             this.buttonImportCsv = this.Factory.CreateRibbonButton();
             this.buttonUpdateType = this.Factory.CreateRibbonButton();
+            this.buttonUpdateTypeAllSheets = this.Factory.CreateRibbonButton();
             this.buttonAmazonOrderSummary = this.Factory.CreateRibbonButton();
             this.buttonAmazonCheck = this.Factory.CreateRibbonButton();
             this.tabRelaxAnalyzer.SuspendLayout();
@@ -54,6 +55,7 @@ namespace analyzer
             // 
             this.groupAnalyze.Items.Add(this.buttonImportCsv);
             this.groupAnalyze.Items.Add(this.buttonUpdateType);
+            this.groupAnalyze.Items.Add(this.buttonUpdateTypeAllSheets);
             this.groupAnalyze.Items.Add(this.buttonAmazonOrderSummary);
             this.groupAnalyze.Items.Add(this.buttonAmazonCheck);
             this.groupAnalyze.Label = "Analyze";
@@ -80,6 +82,17 @@ namespace analyzer
             this.buttonUpdateType.ShowImage = true;
             this.buttonUpdateType.SuperTip = "アクティブシートのK列を type シートのキーワードで更新します。";
             this.buttonUpdateType.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonUpdateType_Click);
+            // 
+            // buttonUpdateTypeAllSheets
+            // 
+            this.buttonUpdateTypeAllSheets.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.buttonUpdateTypeAllSheets.Label = "all消費種類";
+            this.buttonUpdateTypeAllSheets.Name = "buttonUpdateTypeAllSheets";
+            this.buttonUpdateTypeAllSheets.OfficeImageId = "RecordsMenu";
+            this.buttonUpdateTypeAllSheets.ScreenTip = "全シート消費種類更新";
+            this.buttonUpdateTypeAllSheets.ShowImage = true;
+            this.buttonUpdateTypeAllSheets.SuperTip = "全ての月シート（1〜12）のK列を type シートのキーワードで更新します。";
+            this.buttonUpdateTypeAllSheets.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.buttonUpdateTypeAllSheets_Click);
             // 
             // buttonAmazonOrderSummary
             // 
@@ -123,6 +136,7 @@ namespace analyzer
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup groupAnalyze;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonImportCsv;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonUpdateType;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonUpdateTypeAllSheets;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonAmazonOrderSummary;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton buttonAmazonCheck;
     }

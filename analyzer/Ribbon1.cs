@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using analyzer.Core;
@@ -76,6 +77,97 @@ namespace analyzer
             }
 
             NotifyCompletion(warnings);
+        }
+
+        private void buttonUpdateTypeAllSheets_Click(object sender, RibbonControlEventArgs e)
+        {
+            var addIn = Globals.ThisAddIn;
+            if (addIn?.Application == null)
+            {
+                MessageBox.Show("Excel アプリケーションが見つかりません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (addIn.Application.ActiveWorkbook == null)
+            {
+                MessageBox.Show("アクティブなブックがありません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                "全ての月シート（1〜12）に対して消費種類を更新しますか？",
+                "RelaxAnalyzer - 全シート更新",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            var warnings = new List<string>();
+            var config = addIn.Configuration ?? RelaxAnalyzerConfig.Load();
+            var typeMappings = TypeMappingProvider.LoadMappings(config, addIn.Application.ActiveWorkbook, warnings);
+            if (typeMappings.Count == 0)
+            {
+                MessageBox.Show("type マッピングデータが見つかりません。\ntype シートまたは type.csv を確認してください。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var resolver = new TypeResolver(typeMappings);
+            var processedCount = 0;
+            var app = addIn.Application;
+            var prevScreenUpdating = app.ScreenUpdating;
+
+            try
+            {
+                app.ScreenUpdating = false;
+
+                for (var month = 1; month <= 12; month++)
+                {
+                    var sheetName = month.ToString(CultureInfo.InvariantCulture);
+                    var sheet = FindSheet(addIn.Application.ActiveWorkbook, sheetName);
+
+                    if (sheet == null)
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        UpdateTypeColumn(sheet, resolver, warnings);
+                        processedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        warnings.Add($"シート '{sheetName}': {ex.Message}");
+                    }
+                }
+            }
+            finally
+            {
+                app.ScreenUpdating = prevScreenUpdating;
+            }
+
+            var message = $"全シート消費種類更新が完了しました。\n処理済みシート数: {processedCount} 件";
+            if (warnings.Count > 0)
+            {
+                message += "\n\n[警告]\n" + string.Join(Environment.NewLine, warnings);
+            }
+
+            MessageBox.Show(message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private Excel.Worksheet FindSheet(Excel.Workbook workbook, string sheetName)
+        {
+            foreach (Excel.Worksheet ws in workbook.Worksheets)
+            {
+                if (string.Equals(ws.Name, sheetName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return ws;
+                }
+            }
+            return null;
         }
 
         private void buttonAmazonOrderSummary_Click(object sender, RibbonControlEventArgs e)

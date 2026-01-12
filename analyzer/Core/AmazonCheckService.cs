@@ -246,6 +246,7 @@ ItemShortName = itemStr,
           var prevEnableEvents = app.EnableEvents;
 
      var updatedCount = 0;
+            var skippedCount = 0;
 
  try
  {
@@ -261,6 +262,15 @@ ItemShortName = itemStr,
          var useDateObj = useDateValues[i, 1];
    var storeObj = storeValues[i, 1];
       var cardAmountObj = amountValues[i, 1];
+      var commentObj = commentValues[i, 1];
+
+      // L列（コメント欄）が空でない場合はスキップ
+      var existingComment = commentObj == null ? string.Empty : Convert.ToString(commentObj).Trim();
+      if (!string.IsNullOrEmpty(existingComment))
+      {
+        skippedCount++;
+        continue;
+      }
 
         var storeStr = storeObj == null ? string.Empty : Convert.ToString(storeObj).Trim();
 
@@ -294,7 +304,12 @@ var matchedItems = FindMatchingAmazonOrders(useDate.Value, cardAmount, amazonOrd
           // 一括書き込み
         commentRange.Value2 = commentValues;
 
-         _warnings.Add($"シート '{cardSheet.Name}': {updatedCount} 件のAmazon商品名を記入しました。");
+         var statusMessage = $"シート '{cardSheet.Name}': {updatedCount} 件のAmazon商品名を記入しました。";
+                if (skippedCount > 0)
+                {
+                    statusMessage += $" ({skippedCount} 件はコメント欄が既に入力済みのためスキップしました)";
+                }
+                _warnings.Add(statusMessage);
     }
             finally
        {

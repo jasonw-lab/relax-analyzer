@@ -6,6 +6,7 @@
     <File Path="rule/amazon-csv/feature-amzaon-csv.md" />
     <File Path="rule/amazon-csv/Retail.OrderHistory.3.csv" />
     <File Path="rule/csv-vsto.md" />
+    <File Path="rule/feature-type.md" />
     <File Path="rule/type.csv" />
   </Folder>
   <Project Path="analyzer/analyzer.csproj" Id="2a3f0411-a76d-4bfa-bb70-099eb3f7540e" />

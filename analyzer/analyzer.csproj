@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="18.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--
     This section defines project-level properties.
@@ -250,11 +250,19 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <!--
+   <PropertyGroup>
+     <ManifestKeyFile>analyzer_1_TemporaryKey.pfx</ManifestKeyFile>
+   </PropertyGroup>
+   <PropertyGroup>
+     <ManifestCertificateThumbprint>9A43E0680251AA4E4D2E750661BC8053751657E4</ManifestCertificateThumbprint>
+   </PropertyGroup>
+   -->
   <PropertyGroup>
-    <ManifestKeyFile>analyzer_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>analyzer_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>9A43E0680251AA4E4D2E750661BC8053751657E4</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>E990FD84C0E12D7621C95EF86D09B32D2AE2052F</ManifestCertificateThumbprint>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Include additional build rules for an Office application add-in. -->
