@@ -126,7 +126,7 @@ namespace analyzer
                 for (var month = 1; month <= 12; month++)
                 {
                     var sheetName = month.ToString(CultureInfo.InvariantCulture);
-                    var sheet = FindSheet(addIn.Application.ActiveWorkbook, sheetName);
+                    var sheet = SheetHelper.FindSheet(addIn.Application.ActiveWorkbook, sheetName);
 
                     if (sheet == null)
                     {
@@ -156,18 +156,6 @@ namespace analyzer
             }
 
             MessageBox.Show(message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private Excel.Worksheet FindSheet(Excel.Workbook workbook, string sheetName)
-        {
-            foreach (Excel.Worksheet ws in workbook.Worksheets)
-            {
-                if (string.Equals(ws.Name, sheetName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return ws;
-                }
-            }
-            return null;
         }
 
         private void buttonAmazonOrderSummary_Click(object sender, RibbonControlEventArgs e)
@@ -495,6 +483,65 @@ namespace analyzer
             }
 
             NotifyCompletion(warnings);
+        }
+
+        private void buttonUpdateYearSheets_Click(object sender, RibbonControlEventArgs e)
+        {
+            var addIn = Globals.ThisAddIn;
+            if (addIn?.Application == null)
+            {
+                MessageBox.Show("Excel アプリケーションが見つかりません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (addIn.Application.ActiveWorkbook == null)
+            {
+                MessageBox.Show("アクティブなブックがありません。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var workbook = addIn.Application.ActiveWorkbook;
+
+            // 年間シートの存在確認
+            var yearSheet = SheetHelper.FindSheet(workbook, "年間");
+            if (yearSheet == null)
+            {
+                MessageBox.Show("「年間」シートが見つかりません。先にシートを作成してください。", "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 処理確認ダイアログ
+            var result = MessageBox.Show(
+                "全ての月シート（1〜12）を集計して「年間」シートを更新しますか？",
+                "RelaxAnalyzer - 年間消費更新",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            var warnings = new List<string>();
+            var service = new YearSheetService(warnings);
+
+            try
+            {
+                var updateResult = service.UpdateYearSheet(workbook);
+
+                // 結果通知
+                var message = $"年間消費の更新が完了しました。\n処理済み月シート数: {updateResult.ProcessedSheetCount} 件\n更新済み消費種類数: {updateResult.UpdatedTypeCount} 件";
+                if (warnings.Count > 0)
+                {
+                    message += "\n\n[警告]\n" + string.Join(Environment.NewLine, warnings);
+                }
+
+                MessageBox.Show(message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("年間消費の更新中にエラーが発生しました。\n" + ex.Message, "RelaxAnalyzer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
